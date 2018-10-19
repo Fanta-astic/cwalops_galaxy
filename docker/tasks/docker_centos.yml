@@ -1,0 +1,42 @@
+- name: Set up the docker repo
+  yum:
+    name: yum-utils, device-mapper-persistent-data, lvm2
+    state: latest
+  become: yes
+
+- name: Add docker repo
+  shell: >
+     yum-config-manager
+     --add-repo
+     https://download.docker.com/linux/centos/docker-ce.repo
+  become: yes
+    #  name: docker
+    #file: external_repos
+    #baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+    #description: Docker repo
+    #become: yes
+
+- name: Install Docker
+  yum:
+    name: docker
+    state: latest
+  become: yes
+
+- name: Start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Add docker group
+  group:
+    name: docker
+    state: present
+  become: yes
+
+  # User still can't run docker without sudo...
+- name: Add the current user to docker group
+  shell: usermod -aG docker $USER
+  become: yes
+

@@ -1,0 +1,6 @@
+---
+# tasks file for docker
+- import_tasks: docker_centos.yml
+  when: ansible_distribution == 'CentOS'
+
+
