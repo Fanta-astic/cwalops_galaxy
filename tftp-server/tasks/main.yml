@@ -1,0 +1,73 @@
+---
+# tasks file for tftp-server
+- name: Install tftp packages
+  yum:
+    name: "{{tftp_packages}}"
+    state: latest
+
+- name: Create {{tftp_user}} user
+  user:
+    name: "{{tftp_user}}"
+    shell: /bin/false
+    system: true
+    state: present
+
+- name: Template tftp config file
+  template:
+    src: tftp.j2
+    dest: /etc/xinetd.d/tftp
+
+- name: Create the {{tftp_base}} dir
+  file:
+    path: "{{tftp_base}}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create {{tftp_dir}} as the tftp base dir
+  file:
+    path: "{{tftp_dir}}"
+    state: directory
+    mode: 0777
+    owner: "{{tftp_user}}"
+    group: "{{tftp_group}}"
+
+- name: Set selinux context
+  sefcontext:
+    target: "{{tftp_dir}}"
+    setype: tftpdir_rw_t
+    state: present
+
+- name: Start xinetd
+  service:
+    name: xinetd
+    state: started
+    enabled: true
+
+- name: Start tftp server
+  service:
+    name: tftp
+    state: started
+    enabled: true
+
+- name: Add firewall rule for tftp
+  firewalld:
+    port: 69/udp
+    permanent: true
+    state: enabled
+
+- name: Reload firewalld
+  service:
+    name: firewalld
+    state: reloaded
+
+- name: Set selinux permissions
+  seboolean:
+    name: "{{item}}"
+    state: yes
+    persistent: yes
+  loop:
+    - tftp_anon_write
+    - tftp_home_dir
+

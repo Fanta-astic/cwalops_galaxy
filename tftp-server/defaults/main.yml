@@ -1,0 +1,13 @@
+---
+# defaults file for tftp-server
+
+tftp_packages:
+  - tftp
+  - tftp-server
+  - xinetd
+
+tftp_user: tftp
+tftp_group: tftp
+tftp_base: /var/fileserver
+tftp_dir: "{{tftp_base}}/tftp"
+

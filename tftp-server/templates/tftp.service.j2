@@ -1,0 +1,13 @@
+Configuration managed by Ansible
+#{{ansible_date_time.date}} {{ansible_date_time.time}}
+
+[Unit]
+Description=Tftp Server
+
+[Service]
+ExecStart=/usr/sbin/in.tftpd -c -s {{tftp_dir}}
+StandardInput=socket
+
+[Install]
+WantedBy=multi-user.target
+
