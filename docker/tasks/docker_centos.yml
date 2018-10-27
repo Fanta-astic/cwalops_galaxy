@@ -40,3 +40,13 @@
   shell: usermod -aG docker $USER
   become: yes
 
+- name: Enable ipv4 forwarding
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^net.ipv4.ip_forward='
+    line: 'net.ipv4.ip_forward=1'
+
+- name: Restart networking
+  service:
+    name: network
+    state: restarted
