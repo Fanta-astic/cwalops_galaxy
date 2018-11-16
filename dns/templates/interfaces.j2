@@ -1,0 +1,26 @@
+#
+# Ansible Managed {{ansible_date_time.date}} {{ansible_date_time.time}}
+# interfaces(5) file used by ifup(8) and ifdown(8)
+
+# Please note that this file is written to be used with dhcpcd
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+iface wlan0 inet manual
+
+auto eth0
+iface eth0 inet static
+  address {{dns.internal_1.ip}}
+  netmask {{net_dev.mask}}
+  dns-nameservers 127.0.0.1
+  dns-search {{domain}}
+  dns-domain {{domain}}
+
+auto eth1
+iface eth1 inet static
+  address {{dns.internal_2.ip}}
+  netmask {{net_management.mask}}
+  gateway {{net_management.gateway_1}}
+
+up iptables-restore < /etc/iptables.ipv4.nat

@@ -1,0 +1,19 @@
+# @Author: cole
+# @Date:   2018-11-12T11:33:54-05:00
+# @Filename: main.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-11-15T21:22:08-05:00
+
+
+
+---
+# tasks file for dns
+- name: Install required packages
+  apt:
+    name: bind9
+    state: present
+
+- name: Template config files
+  template:
+    src: "{{item}}"
+    dest: /etc/dhcp/
