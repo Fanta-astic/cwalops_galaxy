@@ -3,4 +3,18 @@ bind:
     - 192.168.0.1
     - 8.8.8.8
   listeners:
-    - 127.0.0.1
+    - 0.0.0.0
+  zone_dir: /var/lib/bind/zones
+  zones:
+    - name: cwalops.ca
+      type: master
+      file: "{{zone_dir}}/cwalops.ca.db"
+      lookup: forward
+    - name: 0.0.10.in-addr.arpa
+      type: master
+      file: "{{zone_dir}}/rev.0.0.10.in-addr.arpa"
+      lookup: reverse
+    - name: 0.168.192.in-addr.arpa
+      type: master
+      file: "{{zone_dir}}/rev.0.168.192.in-addr.arpa"
+      lookup: reverse
