@@ -39,6 +39,11 @@
     setype: tftpdir_rw_t
     state: present
 
+- name: Manage selinux permissive
+  selinux_permissive:
+    domain: tftpd_t
+    permissive: true
+
 - name: Start xinetd
   service:
     name: xinetd
