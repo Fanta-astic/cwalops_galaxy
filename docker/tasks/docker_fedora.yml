@@ -3,3 +3,55 @@
 # @Filename: docker_fedora.yml
 # @Last modified by:   cole
 # @Last modified time: 2018-11-10T12:57:41-05:00
+- name: Set up the docker repo
+  dnf:
+    name: dnf-plugins-core
+    state: latest
+  become: yes
+
+- name: Add docker repo
+  shell: >
+    dnf config-manager
+    --add-repo
+    https://download.docker.com/linux/fedora/docker-ce.repo
+  args:
+    warn: false
+  become: yes
+
+
+- name: Install Docker
+  dnf:
+    name: docker
+    state: latest
+  become: yes
+
+- name: Start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Add docker group
+  group:
+    name: docker
+    state: present
+  become: yes
+
+  # User still can't run docker without sudo...
+- name: Add the current user to docker group
+  shell: usermod -aG docker $USER
+  become: yes
+
+- name: Enable ipv4 forwarding
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^net.ipv4.ip_forward='
+    line: 'net.ipv4.ip_forward=1'
+  become: yes
+
+- name: Restart networking
+  service:
+    name: NetworkManager
+    state: restarted
+  become: yes
