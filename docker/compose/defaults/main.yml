@@ -1,0 +1,17 @@
+# @Author: cole
+# @Date:   2018-12-22T17:39:14-05:00
+# @Filename: main.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-12-22T18:09:57-05:00
+
+
+
+---
+# defaults file for compose
+compose_version: 1.23.2
+compose:
+  version: 1.23.2
+  url: "https://github.com/docker/compose/releases/download/{{compose_version}}/docker-compose-{{ansible_system}}-{{ansible_architecture}}"
+  install_dest: /usr/local/bin/docker-compose
+  completion: "https://raw.githubusercontent.com/docker/compose/{{compose_version}}/contrib/completion/bash/docker-compose"
+  completion_dest: /etc/bash_completion.d/docker-compose

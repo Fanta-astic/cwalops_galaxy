@@ -1,0 +1,13 @@
+# @Author: cole
+# @Date:   2018-10-18T21:35:23-04:00
+# @Filename: test.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-12-22T18:17:31-05:00
+
+
+
+---
+- hosts: all
+  remote_user: root
+  roles:
+    - base

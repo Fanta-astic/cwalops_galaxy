@@ -31,17 +31,6 @@
     enabled: yes
   become: yes
 
-- name: Add docker group
-  group:
-    name: docker
-    state: present
-  become: yes
-
-  # User still can't run docker without sudo...
-- name: Add the current user to docker group
-  shell: usermod -aG docker $USER
-  become: yes
-
 - name: Enable ipv4 forwarding
   lineinfile:
     path: /etc/sysctl.conf

@@ -1,0 +1,39 @@
+# @Author: cole
+# @Date:   2018-12-22T17:39:14-05:00
+# @Filename: main.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-12-22T18:12:11-05:00
+
+
+
+---
+# tasks file for compose
+- name: Ensure docker is installed
+  command: which docker
+  register: docker_present
+
+- name: Fail the play if docker is not found
+  fail:
+    msg: "which docker returned 1, docker might not be installed on the system"
+  when: docker_present.rc == 1
+
+- name: Download the latest docker compose package from {{compose.url}}
+  get_url:
+    url: "{{compose.url}}"
+    dest: "{{compose.install_dest}}"
+    mode: +x
+    force: yes
+  become: yes
+
+- name: Test the installation
+  command: docker-compose --version
+  register: compose_test
+
+- debug: var=compose_test.stdout_lines
+
+- name: Install docker compose bash completion on target
+  get_url:
+    url: "{{compose.completion}}"
+    dest: "{{compose.completion_dest}}"
+    force: yes
+  become: yes

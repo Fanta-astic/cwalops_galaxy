@@ -1,0 +1,40 @@
+# @Author: cole
+# @Date:   2018-10-18T21:58:57-04:00
+# @Filename: main.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-11-10T12:57:27-05:00
+
+
+
+---
+# tasks file for docker
+- name: Add docker group
+  group:
+    name: docker
+    state: present
+  become: yes
+  register: group_info
+
+- name: Create docker user
+  user:
+    name: "{{docker_user}}"
+    groups: docker
+  become: yes
+  register: user_info
+
+- import_tasks: docker_centos.yml
+  when: ansible_distribution == 'CentOS'
+
+- import_tasks: docker_fedora.yml
+  when: ansible_distribution == 'Fedora'
+
+- name: Set environment variables
+  blockinfile:
+    path: /etc/environment
+    create: yes
+    block: |
+      PUID={{user_info.uid}}
+      PGID={{group_info.gid}}
+      TZ="{{docker_tz}}"
+      USERDIR="/home/{{docker_user}}"
+      MYSQL_ROOT_PASSWORD="{{docker_mysql_pass}}"

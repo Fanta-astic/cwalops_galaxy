@@ -1,0 +1,13 @@
+# @Author: cole
+# @Date:   2018-10-18T21:35:23-04:00
+# @Filename: main.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-12-22T18:47:33-05:00
+
+
+
+---
+# defaults file for docker
+docker_user: docker
+docker_tz: America/New_York
+docker_mysql_pass: password #this should likely be moved to a future mysql role
