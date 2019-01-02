@@ -2,7 +2,7 @@
 # @Date:   2018-12-29T11:29:44-05:00
 # @Filename: main.yml
 # @Last modified by:   cole
-# @Last modified time: 2019-01-02T17:06:36-05:00
+# @Last modified time: 2019-01-02T17:14:16-05:00
 
 
 
@@ -37,7 +37,7 @@ apache_vhosts:
 apache_allow_override: "All"
 apache_options: "-Indexes +FollowSymLinks"
 
-apache_vhosts_pki: # combined with apache_vhost_user
+apache_vhosts_pki: # combined with apache_vhosts_user
   pki:
     cert:
       src: files/pki/{{item.pki_domain}}/cert.pem
@@ -68,7 +68,6 @@ apache_vhosts_last: # combined with the result of pki and user
     certificate_key_file: "{{item.pki.privkey.dest}}"
     # Optional.
     certificate_chain_file: "{{item.pki.chain.dest|default('')}}"
-
 
 
 apache_ignore_missing_ssl_certificate: true
