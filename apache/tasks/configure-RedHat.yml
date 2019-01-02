@@ -1,0 +1,61 @@
+# @Author: cole
+# @Date:   2018-12-29T11:29:44-05:00
+# @Filename: configure-RedHat.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-12-30T16:09:14-05:00
+
+
+
+---
+- name: Configure Apache.
+  lineinfile:
+    dest: "{{ apache_server_root }}/conf/{{ apache_daemon }}.conf"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items: "{{ apache_ports_configuration_items }}"
+  notify: restart apache
+
+- name: Copy pki certs
+  copy:
+    src: "{{item.pki.cert.src}}"
+    dest: "{{item.pki.cert.dest}}"
+  loop: "{{apache_vhosts_ssl}}"
+
+- name: Copy pki key
+  copy:
+    src: "{{item.pki.privkey.src}}"
+    dest: "{{item.pki.privkey.dest}}"
+  loop: "{{apache_vhosts_ssl}}"
+
+- name: Copy pki chain
+  copy:
+    src: "{{item.pki.chain.src}}"
+    dest: "{{item.pki.chain.dest}}"
+  loop: "{{apache_vhosts_ssl}}"
+  ignore_errors: yes
+
+- name: Check whether certificates defined in vhosts exist.
+  stat: path={{ item.certificate_file }}
+  register: apache_ssl_certificates
+  with_items: "{{ apache_vhosts_ssl }}"
+
+- name: Add ssl configuration when apache_enable_ssl is defined
+  template:
+    src: "{{apache_ssl_template}}"
+    dest: "{{apache_conf_path}}/{{apache_ssl_filename}}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart apache
+  when: apache_enable_ssl
+
+- name: Add apache vhosts configuration.
+  template:
+    src: "{{ apache_vhosts_template }}"
+    dest: "{{ apache_conf_path }}/{{ apache_vhosts_filename }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart apache
+  when: apache_create_vhosts
