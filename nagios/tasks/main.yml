@@ -1,0 +1,29 @@
+# @Author: cole
+# @Date:   2018-11-24T20:34:46-05:00
+# @Filename: main.yml
+# @Last modified by:   cole
+# @Last modified time: 2018-11-24T21:26:37-05:00
+
+
+
+---
+# tasks file for nagios
+
+- name: Combine the user vars with the defaults when nagios_vars is defined
+  set_fact:
+    nagios: "{{nagios | default([]) + [nagios_defaults | combine(nagios_vars)]}}"
+  when: nagios_vars is defined
+
+- name: Assign nagios_defaults to nagios when nagios_vars is not defined
+  set_fact:
+    nagios: "{{nagios_defaults}}"
+  when: nagios_vars is not defined
+
+- include_tasks: nagios_fedora.yml
+  when: ansible_distribution == 'Fedora'
+
+- name: Start Nagios and enable it at startup
+  service:
+    name: nagios
+    state: started
+    enabled: yes

@@ -1,0 +1,79 @@
+- name: Ensure dependencies are installed
+  yum:
+    name: "{{nagios.depends}}"
+    state: present
+
+- name: Creat the nagios groups
+  group:
+    name: "{{item}}"
+    state: present
+  loop: "{{nagios.user.groups}}"
+
+- name: Create the nagios user
+  user:
+    name: "{{nagios.user.name}}"
+    groups: "{{nagios.user.groups}}"
+    state: present
+
+- name: Download the Nagios source tar to controller
+  get_url:
+    url: "{{nagios.source.url}}"
+    dest: "{{nagios.source.dest}}"
+  delegate_to: localhost
+
+- name: Unarchive the taball to host
+  unarchive:
+    src: "{{nagios.source.dest}}"
+    dest: /tmp/
+
+- name: Configure Nagios for compilation and installation
+  shell: ./configure --with-nagios-group=nagios --with-command-group=nagcmd
+  args:
+    chdir: /tmp/nagios-{{nagios.source.version}}
+  register: nagios_prep
+
+- debug: var=nagios_prep.stdout_lines
+
+- name: Run the required make commands
+  make:
+   chdir: /tmp/nagios-{{nagios.source.version}}
+  loop:
+    - all
+    - install
+    - install-init
+    - install-config
+    - install-commandmode
+    - install-webconf
+  notify: restart httpd
+
+- name: Add the admin email to contacts.cfg
+  lineinfile:
+    path:
+    regexp: 'email'
+    line: "email {{nagios.admin_email}}"
+    state: present
+
+- name: Unarchive Nagios plugins to target host
+  unarchive:
+    src: "{{nagios.plugins.dest}}"
+    dest: /tmp/
+
+- name: Configure Nagios for compilation and installation
+  shell: ./configure --with-nagios-group=nagios --with-nagios-group=nagcmd
+  args:
+    chdir: /tmp/nagios-{{nagios.plugins.version}}
+
+- name: Run the required make commands for plugins
+  make:
+   chdir: /tmp/nagios-{{nagios.plugins.version}}
+  loop:
+    - all
+    - install
+
+- debug: msg="Run htpasswd -s -c /usr/local/nagios/etc/htpasswd.users nagiosadmin to configure the nagios web admin"
+
+- name: Verify the Nagios config files
+  command: /usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+  register: nagios_verify
+
+- debug: var=nagios_verify.stdout_lines

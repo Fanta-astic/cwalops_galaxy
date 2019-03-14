@@ -1,0 +1,14 @@
+# @Author: cole
+# @Date:   2018-11-24T20:34:46-05:00
+# @Filename: main.yml
+# @Last modified by:   cole
+# @Last modified time: 2019-01-04T16:31:04-05:00
+
+
+
+---
+# handlers file for nagios
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
