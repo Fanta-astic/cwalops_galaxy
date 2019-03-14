@@ -1,0 +1,19 @@
+---
+# defaults file for proxmox
+proxmox_vars:
+  proxmox_username: "{{proxmox_user}}"
+  proxmox_password: "{{proxmox_pass}}"
+  proxmox_server: virt.cwalops.ca
+
+proxmox_defaults:
+  api_host: "{{proxmox_vars.proxmox_server}}"
+  api_password: "{{proxmox_vars.proxmox_password}}"
+  api_user: "{{proxmox_vars.proxmox_username}}"
+  cores: 1
+  cpus: 1
+  disk: 10
+  memory: 1024
+  nameserver: "{{dns.internal_2.ip}}"
+  ostemplate: local:vztmpl/ubuntu-18.04-standard_18.04.1-1_amd64.tar.gz
+  node: virt
+  storage: local-lvm

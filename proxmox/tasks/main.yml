@@ -1,0 +1,21 @@
+---
+# tasks file for proxmox
+- name:           Combine the user vars with the defaults when proxmox_vars is defined
+  set_fact:
+    pm:           "{{proxmox_defaults | combine(proxmox_vars)}}"
+  when:           proxmox_vars is defined
+
+- debug: var=pm
+
+- proxmox:
+    api_host:     "{{pm.api_host}}"
+    api_password: "{{pm.api_password}}"
+    api_user:     "{{pm.proxmox_username}}"
+    cores:        "{{pm.cores}}"
+    cpus:         "{{pm.cpus}}"
+    disk:         "{{pm.disk}}"
+    memory:       "{{pm.memory}}"
+    nameserver:   "{{pm.nameserver}}"
+    ostemplate:  "{{pm.ostemplate}}"
+    node: "{{pm.node}}"
+    storage: "{{pm.storage}}"
