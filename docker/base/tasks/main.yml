@@ -28,13 +28,3 @@
 - import_tasks: docker_fedora.yml
   when: ansible_distribution == 'Fedora'
 
-- name: Set environment variables
-  blockinfile:
-    path: /etc/environment
-    create: yes
-    block: |
-      PUID={{user_info.uid}}
-      PGID={{group_info.gid}}
-      TZ="{{docker_tz}}"
-      USERDIR="/home/{{docker_user}}"
-      MYSQL_ROOT_PASSWORD="{{docker_mysql_pass}}"
